@@ -9,25 +9,66 @@ class Conn(object):
                             user="admin", password="QR9I4Xtb7e6AYk6O",
                             database="flying_fish", charset="utf8")
         self.cursor = self.conn.cursor()
+
     # 关闭mysql连接
     def close(self):
         self.conn.close()
         self.cursor.close()
+
     # 查询语句
-    def select_mysql(self,sql):
+    def select_mysql(self, table_name, fields, condition):
+        """
+        :param table_name:  表名
+        :param fields:  字段
+        :param condition:  更新值
+        """
+        if condition != '':
+            condition = ' where '+condition
+
+        sql = "select {field} from `{table}`{condition};".format(
+            table=table_name,
+            field='`' + '`,`'.join(fields) + '`',
+            condition=condition
+        )
         try:
             self.cursor.execute(sql)
             results = self.cursor.fetchall()
             return results
         except Exception as e:
             print("execute mysql: %s error:%s" %(sql,e))
+
     # 插入语句
-    def insert_mysql(self,table_name, fields, vals, updatefields):
-        sql = "INSERT INTO `{table}` ({field}) VALUES ({val}) ON DUPLICATE KEY UPDATE {updatefield};".format(
+    def insert_mysql(self, table_name, fields, vals):
+        """
+        :param table_name:  表名
+        :param fields:  字段
+        :param vals:  更新值
+        :return:
+        """
+        insert_mysql(self, table_name, fields, vals, [])
+
+    # 插入语句 ON DUPLICATE KEY UPDATE
+    def insert_mysql(self, table_name, fields, vals, updatefields):
+        """
+        :param table_name:  表名
+        :param fields:  字段
+        :param vals:  更新值
+        :param updatefields:  更新字段
+        :return:
+        """
+        if updatefields == []:
+            updatestmt = ''
+        else:
+            updates = []
+            for a,b in zip(* [updatefields] * 2):
+                updates.append(a+'=VALUES('+b+")")
+            updatestmt=' ON DUPLICATE KEY UPDATE'+','.join(updates)
+
+        sql = "INSERT INTO `{table}` ({field}) VALUES ({val}){updatefield};".format(
             table=table_name,
             field='`' + '`,`'.join(fields) + '`',
             val=','.join(['%s'] * len(fields)),
-            updatefield=updatefields
+            updatefield=updatestmt
         )
         value_list = []
         try:
@@ -42,6 +83,7 @@ class Conn(object):
                 self.conn.commit()
         except Exception as e:
             print("执行MySQL: %s 时出错：%s" % (sql, e))
+
     # 清空数据
     def truncate_mysql(self,table_name):
         sql = "TRUNCATE `{table}`;".format(
@@ -51,13 +93,14 @@ class Conn(object):
             self.cursor.execute(sql)
         except Exception as e:
             print("执行MySQL: %s 时出错：%s" % (sql, e))
+
 if __name__ == '__main__':
     conn = Conn()
-    condition = "2021-02-25"
-    sql = "SELECT `task_id`, `task_name`, `version_id`, `instance_id`, `app_id`, `cmd_conf` FROM `opt_task_info` where date(`ctime`) = '{cond}';".format(
-            cond=condition
-    )
-    select_res = conn.select_mysql(sql)
+    table_name = "skew_info"
+    fields = ["task_id", "task_name", "version_id", "instance_id", "app_id","skew_loc"]
+    condition = "date(`ctime`) = '2021-02-25'"
+    select_res = conn.select_mysql(table_name, fields, condition)
+
     # 插入数据
     vals = []
     for row in select_res:
@@ -73,7 +116,7 @@ if __name__ == '__main__':
     fields = ["task_id", "task_name", "version_id", "instance_id", "app_id","skew_loc"]
     updatefields = ["skew_list","skew_loc","ast_json"]
     conn.truncate_mysql(table_name)
-    conn.insert_mysql(table_name, fields, vals, updatefields)
+    conn.insert_mysql(table_name, fields, vals)
     conn.close()
 
 

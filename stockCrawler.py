@@ -6,20 +6,31 @@ import os
 import urllib3
 import re 
 import json
+import certifi
 
 # A股：
-# https://d.10jqka.com.cn/v2/realhead/hs_688578/last.js
+# https://d.10jqka.com.cn/v6/realhead/hk_HK0005/last.js
+# https://d.10jqka.com.cn/v2/realhead/hs_600178/last.js
 
-
-url = 'https://d.10jqka.com.cn/v6/realhead/hk_HK0005/last.js'
-headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'}
-http = urllib3.PoolManager()   # 创建连接池管理对象
+urllib3.disable_warnings()               # 关闭ssl警告
+url = 'https://d.10jqka.com.cn/v2/realhead/hs_600178/last.js'
+headers = urllib3.util.make_headers(accept_encoding='gzip, deflate',keep_alive=True,user_agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0")
+headers['Accept-Language'] = "en-US,en;q=0.5"
+headers['Connection'] = 'keep-alive'
+headers['Accept'] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+http = urllib3.PoolManager(
+                            cert_reqs='CERT_REQUIRED',
+                            ca_certs=certifi.where(),
+                            num_pools=15,
+                            maxsize=6,
+                            timeout=40.0,
+                            retries=urllib3.Retry(connect=2, read=2, redirect=10)
+                            )    # 创建连接池管理对象
 res = http.request('GET', url, headers=headers)    # 发送GET请求
-# print(r.status)                # 打印请求状态码
+print(res.status)                # 打印请求状态码
 data = res.data.decode('utf-8')  # 返回结果
-
-items = re.search(r'\((.*)\)',res).group(1)  # 成交指标
-
+items = re.search(r'\((.*)\)',data).group(1)   # 行情指标
+print(items)
 
 data = json.loads(items)
 print(data['items']['10'])
