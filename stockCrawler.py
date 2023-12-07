@@ -13,7 +13,7 @@ import certifi
 # https://d.10jqka.com.cn/v2/realhead/hs_600178/last.js
 
 urllib3.disable_warnings()               # 关闭ssl警告
-url = 'https://d.10jqka.com.cn/v2/realhead/hs_600178/last.js'
+url = 'https://d.10jqka.com.cn/v2/realhead/hs_300315/last.js'
 headers = urllib3.util.make_headers(accept_encoding='gzip, deflate',keep_alive=True,user_agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0")
 headers['Accept-Language'] = "en-US,en;q=0.5"
 headers['Connection'] = 'keep-alive'
