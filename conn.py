@@ -4,10 +4,10 @@ import pymysql
 
 class Conn(object):
     def __init__(self):
-        # mysql -h172.16.3.159 -P3307  -uadmin -pQR9I4Xtb7e6AYk6O --default-character-set=utf8
-        self.conn = pymysql.connect(host="172.16.3.159", port=3307,
-                            user="admin", password="QR9I4Xtb7e6AYk6O",
-                            database="flying_fish", charset="utf8")
+        # mysql -h ubuntu2 -P3306  -uhadoop -phadoop --default-character-set=utf8
+        self.conn = pymysql.connect(host="ubuntu2", port=3306,
+                            user="hadoop", password="hadoop",
+                            database="finance", charset="utf8")
         self.cursor = self.conn.cursor()
 
     # 关闭mysql连接
@@ -19,11 +19,13 @@ class Conn(object):
     def select_mysql(self, table_name, fields, condition):
         """
         :param table_name:  表名
-        :param fields:  字段
-        :param condition:  更新值
+        :param fields:  字段列表
+        :param condition:  查询条件
         """
         if condition != '':
-            condition = ' where '+condition
+            condition = ' where ' + condition
+        else:
+            condition = ''
 
         sql = "select {field} from `{table}`{condition};".format(
             table=table_name,

@@ -2,16 +2,15 @@
 
 import pymysql
 import csv
-import datetime
 
 def connect():
     """
     连接mysql数据库
     :return:
     """
-    conn = pymysql.connect(host="127.0.0.1", port=3306,
-                           user="hadoop", password="hadoop",
-                           database="flying_fish", charset="utf8")
+    conn = pymysql.connect(host="ubuntu2", port=3306,
+                            user="hadoop", password="hadoop",
+                            database="finance", charset="utf8")
     return conn
  
  
@@ -30,16 +29,17 @@ def insert_mysql(read_path, table_name, fields):
         field='`' + '`,`'.join(fields) + '`',
         val=','.join(['%s'] * len(fields))
     )
+    print(sql)
     value_list = []
     try:
         for line in reader_csv:
             temp_list = []
-            for i in range(len(fields)-1):
+            for i in range(len(fields)):
                 print(line[i])
                 temp_list.append(line[i])
-            temp_list.append(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            # print(temp_list)
             value_list.append(temp_list)
-            if len(value_list) == 1024:
+            if len(value_list) == 100:
                 cursor.executemany(sql, value_list)
                 conn.commit()
                 value_list = []
@@ -55,9 +55,9 @@ def insert_mysql(read_path, table_name, fields):
  
  
 if __name__ == '__main__':
-    read_path = "../data/user.csv"
-    table_name = "user"
-    fields = ["code", "name", "email", "password", "is_valid","create_time"]
+    read_path = "D:/VSCode/Quantitative-trading-of-stocks/data/AllStocks.csv"
+    table_name = "stocks_list"
+    fields = ["market", "stocks_code", "stocks_name", "listing_date"]
     insert_mysql(read_path, table_name, fields)
 
 
