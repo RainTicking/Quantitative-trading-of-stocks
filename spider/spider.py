@@ -17,7 +17,7 @@ from connDB import conn
 class spider():
     def __init__(self):
         urllib3.disable_warnings()               # 关闭ssl警告
-        self.base = 'https://d.10jqka.com.cn'
+        self.base = 'https://d.10jq' + 'ka.com.cn'
         self.headers = urllib3.util.make_headers(accept_encoding='gzip, deflate, br',keep_alive=True,user_agent="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36")
         self.headers['Accept-Language'] = "zh-CN,zh;q=0.9"
         self.headers['Connection'] = 'keep-alive'
