@@ -1,74 +1,38 @@
-
+-- 股票列表
 create table stocks_list
 (
-market varchar(10),
-stocks_code varchar(20) primary key,
-stocks_name varchar(50),
-listing_date varchar(10)
+market varchar(10) comment '市场',
+stocks_code varchar(20) primary key comment '股票编码',
+stocks_name varchar(50) comment '股票名称',
+listing_date varchar(10) comment '上市日期'
+) default charset = 'utf8'
+;
+
+-- 股票行情
+create table stocks_quotes
+(
+stocks_date varchar(10) comment '股票日期',
+stocks_code varchar(20) comment '股票编码',
+request_status varchar(20) comment '请求状态码',
+quotes_data varchar(3000) comment '股票行情',
+create_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+update_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+primary key (stocks_date,stocks_code)
 ) default charset = 'utf8'
 ;
 
 
--- 股票行情
-
-昨收 6
-今开 7
-今收 10
-涨幅% 199112
-涨跌 264648
-涨停 69
-跌停 70
-最高 8
-最低 9
-振幅% 526792
-成交量 13
-成交额 19
-换手% 1968584
-市盈率(动) 2034120
-市净率 1149395 / 592920
-总市值 3541450
-流通市值 3475914
-委比% 461256
-委差 395720
-
-买一价格 24
-买一委托量 25
-卖一价格 25
-卖一委托量 31
-
-外盘 14
-内盘 15
-总股本 402
-流通股 407
-
-盘后成交量 74
-均价 1378761
-
-
-
-
-
-大单：
-大于等于6万股或者30万元以上的成交单。
-中单：
-大于等于1万股小于6万股或者大于等于5万元小于30万元的成交单。
-小单：
-小于1万股或5万元的成交单。
-
-大单流入金额 223 + 225
-中单流入金额 259
-小单流入金额 237
-
-大单流出金额 224 + 226
-中单流出金额 260
-小单流出金额 238
-
-主力净额 大单流入金额 - 大单流出金额
-5日主力净额
-资金净流入 流入金额 - 流出金额
-
-
-支撑位
-压力位
+-- 任务执行日志
+create table task_logs
+(
+id int AUTO_INCREMENT PRIMARY KEY comment '任务id',
+task_date varchar(10) comment '任务日期',
+task_name varchar(20) comment '任务名称(spider/dataSync)',
+task_status varchar(20) comment '任务状态(success/fail)',
+remark varchar(100) comment '备注',
+create_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+update_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间'
+) default charset = 'utf8'
+;
 
 
