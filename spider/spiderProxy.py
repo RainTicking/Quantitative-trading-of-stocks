@@ -49,7 +49,6 @@ class spider():
             res = self.http.request('GET', url, headers=self.headers)    # 发送GET请求
             status = res.status              # 请求状态码
             data = res.data.decode('utf-8')  # 返回结果
-            res.release_conn()  #释放这个http连接
             # print(data)
             return [stocks_code,status,data]
         #记录异常请求
