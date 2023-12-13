@@ -1,0 +1,73 @@
+{
+    "setting": {},
+    "job": {
+        "setting": {
+            "speed": {
+                 "channel": 3
+            },
+            "errorLimit": {
+                "record": 0,
+                "percentage": 0.02
+            }
+        },
+        "content": [
+            {
+                "reader": {
+                    "name": "mysqlreader",
+                    "parameter": {
+                        "username": "hadoop",
+                        "password": "hadoop",
+                        "column": [
+                            "market",
+                            "stocks_code",
+                            "stocks_name",
+                            "listing_date"
+                        ],
+                        "splitPk": "stocks_code",
+                        "connection": [
+                            {
+                                "table": [
+                                    "stocks_list"
+                                ],
+                                "jdbcUrl": [
+     "jdbc:mysql://ubuntu2:3306/finance"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "writer": {
+                    "name": "hdfswriter",
+                    "parameter": {
+                        "defaultFS": "hdfs://ubuntu2:9000",
+                        "fileType": "orc",
+                        "path": "/user/hive/warehouse/stg.db/stg_stocks_list",
+                        "fileName": "stg_stocks_list",
+                        "column": [
+                            {
+                                "name": "market",
+                                "type": "string"
+                            },
+                            {
+                                "name": "stocks_code",
+                                "type": "string"
+                            },
+                            {
+                                "name": "stocks_name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "listing_date",
+                                "type": "string"
+                            }
+                        ],
+                        "writeMode": "truncate",
+                        "fieldDelimiter": "\u0001",
+                        "compress":"NONE"
+                    }
+                }
+            }
+        ]
+    }
+}
+
