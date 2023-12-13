@@ -3,7 +3,7 @@
     "job": {
         "setting": {
             "speed": {
-                 "channel": 1
+                 "channel": 2
             },
             "errorLimit": {
                 "record": 0,
@@ -18,16 +18,19 @@
                         "username": "hadoop",
                         "password": "hadoop",
                         "column": [
-                            "market",
+                            "stocks_date",
                             "stocks_code",
-                            "stocks_name",
-                            "listing_date"
+                            "request_status",
+                            "quotes_data",
+                            "create_time",
+                            "update_time"
                         ],
+                        "where": "stocks_date='${dt}'",
                         "splitPk": "stocks_code",
                         "connection": [
                             {
                                 "table": [
-                                    "stocks_list"
+                                    "stocks_quotes"
                                 ],
                                 "jdbcUrl": [
      "jdbc:mysql://ubuntu2:3306/finance"
@@ -41,11 +44,11 @@
                     "parameter": {
                         "defaultFS": "hdfs://ubuntu2:9000",
                         "fileType": "orc",
-                        "path": "/user/hive/warehouse/stg.db/stg_stocks_list/pt=${pt}",
-                        "fileName": "stg_stocks_list",
+                        "path": "/user/hive/warehouse/stg.db/stg_stocks_quotes/pt=${pt}",
+                        "fileName": "stg_stocks_quotes",
                         "column": [
                             {
-                                "name": "market",
+                                "name": "stocks_date",
                                 "type": "string"
                             },
                             {
@@ -53,12 +56,20 @@
                                 "type": "string"
                             },
                             {
-                                "name": "stocks_name",
+                                "name": "request_status",
                                 "type": "string"
                             },
                             {
-                                "name": "listing_date",
+                                "name": "quotes_data",
                                 "type": "string"
+                            },
+                            {
+                                "name": "create_time",
+                                "type": "timestamp"
+                            },
+                            {
+                                "name": "update_time",
+                                "type": "timestamp"
                             }
                         ],
                         "writeMode": "truncate",
