@@ -1,0 +1,1 @@
+2023-12-11 23:24:44 execute mysql: INSERT INTO `stocks_quotes` (`stocks_date`,`stocks_code`,`request_status`,`quotes_data`) VALUES (%s,%s,%s,%s) ON DUPLICATE KEY UPDATE request_status=VALUES(request_status),quotes_data=VALUES(quotes_data); error: (1205, 'Lock wait timeout exceeded; try restarting transaction')
