@@ -108,13 +108,17 @@ class spider():
         return fail_cnt
 
 if __name__ == '__main__':
-    mySpider = spider()
-    i = 1
-    fail_cnt = mySpider.run()
-    while fail_cnt != '0' and i < 3:
+    current_day = datetime.datetime.now().weekday()
+    if current_day == 6 or current_day == 0:
+        pass
+    else:
+        mySpider = spider()
+        i = 1
         fail_cnt = mySpider.run()
-        i += 1
-    mySpider.mysqlConn.close()
+        while fail_cnt != '0' and i < 3:
+            fail_cnt = mySpider.run()
+            i += 1
+        mySpider.mysqlConn.close()
 
 
 
