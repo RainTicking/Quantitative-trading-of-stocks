@@ -14,18 +14,23 @@
 振幅% 526792 amplitude percent
 成交量 13 deal cnt
 成交额 19 deal amt 
-换手% 1968584 turnover rate
-市盈率(动) 2034120 P/E ratio (moving) PER
-市净率 1149395 / 592920 p/b ratio   market-to-book ratio  PBR
+换手% 1968584 turnover rate 成交量/无限售流通股数
+市盈率(静) 134152   
+市盈率(动) 2942 2034120  P/E ratio (moving) PER
+市盈率(TTM) 3153
+市净率 592920 1149395  p/b ratio   market-to-book ratio  PBR
 总市值 3541450  market cap
 流通市值 3475914 float cap
 总股本 402 total equity
 流通股 407 float stock
 盘后成交量 74 after hours deal cnt
-大单流入金额 223 + 225  big inflow amt
+盘后成交额 75 after hours deal amt
+超大单流入金额 223  super inflow amt
+大单流入金额 225  big inflow amt
 中单流入金额 259    mid inflow amt
 小单流入金额 237    small inflow amt
-大单流出金额 224 + 226 big outflow amt
+超大单流出金额 224 super outflow amt
+大单流出金额 226 big outflow amt
 中单流出金额 260    mid outflow amt
 小单流出金额 238    small outflow amt
 委比% 461256 appoint rate
@@ -52,3 +57,8 @@
 支撑位  support level
 压力位  pressure level
 
+-- 12: "5"
+-- 17: "8500.00"
+-- 49: "31965.00"
+-- 130: "21022.00"
+-- 527198: "1838137.000"

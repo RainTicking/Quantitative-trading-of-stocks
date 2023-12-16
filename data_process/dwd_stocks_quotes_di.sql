@@ -1,7 +1,7 @@
 
-insert overwrite table dwd.dwd_stocks_quotes_da partition (pt='${pt}')
+insert overwrite table dwd.dwd_stocks_quotes_di partition (pt='${pt}')
 select
-     t1.stocks_date  -- 股票日期 
+     t1.trading_date  -- 股票日期 
     ,t2.market  -- 市场
     ,t1.stocks_code  -- 股票编码
     ,t2.stocks_name  -- 股票名称
@@ -24,24 +24,29 @@ select
     ,cast(deal_cnt as bigint) deal_cnt -- 成交量
     ,cast(deal_amt as decimal(18,2)) deal_amt -- 成交额 
     ,cast(turnover_rate as decimal(18,2)) turnover_rate -- 换手%
+    ,cast(per_static as decimal(18,2)) per_static -- 市盈率(静)
     ,cast(per_moving as decimal(18,2)) per_moving -- 市盈率(动)
+    ,cast(per_ttm as decimal(18,2)) per_ttm -- 滚动市盈率(TTM)
     ,cast(pbr as decimal(18,2)) pbr -- 市净率
     ,cast(market_cap as decimal(18,2)) market_cap -- 总市值
     ,cast(float_cap as decimal(18,2)) float_cap -- 流通市值
     ,cast(total_equity as decimal(18,2)) total_equity -- 总股本
     ,cast(float_stock as decimal(18,2)) float_stock -- 流通股
     ,cast(after_hours_deal_cnt as bigint) after_hours_deal_cnt -- 盘后成交量
-    ,cast(big_inflow_amt_a as decimal(18,2))+cast(big_inflow_amt_b as decimal(18,2)) big_inflow_amt  -- 大单流入金额
+    ,cast(after_hours_deal_amt as decimal(18,2)) after_hours_deal_amt -- 盘后成交额
+    ,cast(super_inflow_amt as decimal(18,2)) super_inflow_amt  -- 超大单流入金额
+    ,cast(big_inflow_amt as decimal(18,2)) big_inflow_amt  -- 大单流入金额
     ,cast(mid_inflow_amt as decimal(18,2)) mid_inflow_amt  -- 中单流入金额
     ,cast(small_inflow_amt as decimal(18,2)) small_inflow_amt  -- 小单流入金额
-    ,cast(big_outflow_amt_a as decimal(18,2))+cast(big_outflow_amt_b as decimal(18,2)) big_outflow_amt  -- 大单流出金额
+    ,cast(super_outflow_amt as decimal(18,2)) super_outflow_amt  -- 超大单流出金额
+    ,cast(big_outflow_amt as decimal(18,2)) big_outflow_amt  -- 大单流出金额
     ,cast(mid_outflow_amt as decimal(18,2)) mid_outflow_amt  -- 中单流出金额
     ,cast(small_outflow_amt as decimal(18,2)) small_outflow_amt  -- 小单流出金额
-    ,cast(big_inflow_amt_a as decimal(18,2))+cast(big_inflow_amt_b as decimal(18,2))
-     -cast(big_outflow_amt_a as decimal(18,2))-cast(big_outflow_amt_b as decimal(18,2)) big_net_amt  -- 主力净额（大单流入金额减大单流出金额）
-    ,cast(big_inflow_amt_a as decimal(18,2))+cast(big_inflow_amt_b as decimal(18,2))
+    ,cast(super_inflow_amt as decimal(18,2))+cast(big_inflow_amt as decimal(18,2))
+     -cast(super_outflow_amt as decimal(18,2))-cast(big_outflow_amt as decimal(18,2)) big_net_amt  -- 主力净额（大单流入金额减大单流出金额）
+    ,cast(super_inflow_amt as decimal(18,2))+cast(big_inflow_amt as decimal(18,2))
      +cast(mid_inflow_amt as decimal(18,2))+cast(small_inflow_amt as decimal(18,2))
-     -cast(big_outflow_amt_a as decimal(18,2))-cast(big_outflow_amt_b as decimal(18,2)) 
+     -cast(super_outflow_amt as decimal(18,2))-cast(big_outflow_amt as decimal(18,2)) 
      -cast(mid_outflow_amt as decimal(18,2))-cast(small_outflow_amt as decimal(18,2))  net_inflow_amt  -- 资金净流入(流入金额减流出金额)
     ,cast(appoint_rate as decimal(18,2)) appoint_rate -- 委比%
     ,cast(appoint_diff as bigint) appoint_diff -- 委差
@@ -58,7 +63,7 @@ from
     from
     (
         select 
-            stocks_date    -- 股票日期
+            stocks_date  trading_date  -- 股票日期
             ,stocks_code   -- 股票编码
             ,request_status-- 请求状态码
             ,quotes_data  -- 股票行情
@@ -69,7 +74,7 @@ from
             end quotes_json
         from stg.stg_stocks_quotes 
         where pt = '${pt}'
-    ) tt lateral view json_tuple(quotes_json,'6','7','10','199112','264648','69','70','8','9','1378761','526792','13','19','1968584','2034120','1149395','3541450','3475914','402','407','74','223','225','259','237','224','226','260','238','461256','395720','24','25','30','31','14','15')  b as 
+    ) tt lateral view json_tuple(quotes_json,'6','7','10','199112','264648','69','70','8','9','1378761','526792','13','19','1968584','134152','2034120','3153','1149395','3541450','3475914','402','407','74','75','223','225','259','237','224','226','260','238','461256','395720','24','25','30','31','14','15')  b as 
         ytd_closing_price  -- 昨收
         ,today_opening_price  -- 今开
         ,today_closing_price  -- 今收
@@ -84,19 +89,22 @@ from
         ,deal_cnt  -- 成交量
         ,deal_amt  -- 成交额 
         ,turnover_rate  -- 换手%
+        ,per_static  -- 市盈率(静)
         ,per_moving  -- 市盈率(动)
+        ,per_ttm   -- 滚动市盈率(TTM)
         ,pbr  -- 市净率
         ,market_cap  -- 总市值
         ,float_cap  -- 流通市值
         ,total_equity  -- 总股本
         ,float_stock  -- 流通股
         ,after_hours_deal_cnt  -- 盘后成交量
-        ,big_inflow_amt_a  -- 大单流入金额
-        ,big_inflow_amt_b  -- 大单流入金额
+        ,after_hours_deal_amt  -- 盘后成交额
+        ,super_inflow_amt  -- 超大单流入金额
+        ,big_inflow_amt  -- 大单流入金额
         ,mid_inflow_amt  -- 中单流入金额
         ,small_inflow_amt  -- 小单流入金额
-        ,big_outflow_amt_a  -- 大单流出金额
-        ,big_outflow_amt_b  -- 大单流出金额
+        ,super_outflow_amt  -- 超大单流出金额
+        ,big_outflow_amt  -- 大单流出金额
         ,mid_outflow_amt  -- 中单流出金额
         ,small_outflow_amt  -- 小单流出金额
         ,appoint_rate  -- 委比%

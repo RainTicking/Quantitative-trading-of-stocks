@@ -109,7 +109,7 @@ class spider():
 
 if __name__ == '__main__':
     current_day = datetime.datetime.now().weekday()
-    if current_day == 6 or current_day == 0:
+    if current_day == 5 or current_day == 6:
         pass
     else:
         mySpider = spider()
