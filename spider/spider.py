@@ -44,7 +44,11 @@ class spider():
     '''
     def getUrl(self,market,stocks_code):
         try:
-            url = self.base + '/v2/realhead/hs_' + stocks_code + '/last.js'
+            url = ''
+            if market == '港股':
+                url = self.base + '/v6/realhead/hk_' + stocks_code + '/defer/last.js'
+            else:
+                url = self.base + '/v2/realhead/hs_' + stocks_code + '/last.js'
             # print("url:",url)
             res = self.http.request('GET', url, headers=self.headers)    # 发送GET请求
             status = res.status              # 请求状态码
@@ -54,7 +58,7 @@ class spider():
             return [stocks_code,status,data]
         #记录异常请求
         except Exception  as e:
-            print("request: %s error：%s" % (stocks_code, e))
+            # print("request: %s error：%s" % (stocks_code, e))
             current_datetime = datetime.datetime.now()
             formatted_time = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
             file_name = './logs/spider_error_' + self.formatted_date + '.log'
@@ -88,6 +92,7 @@ class spider():
             if i % 10 == 0:
                 self.mysqlConn.insert_mysql(table_name, fields, vals, updatefields)
                 vals = []
+                time.sleep(random.uniform(5,9))
             i += 1
         self.mysqlConn.insert_mysql(table_name, fields, vals, updatefields)
         # 写入成功日志
@@ -115,7 +120,7 @@ if __name__ == '__main__':
         mySpider = spider()
         i = 1
         fail_cnt = mySpider.run()
-        while fail_cnt != '0' and i < 3:
+        while fail_cnt != '0' and i < 8:
             fail_cnt = mySpider.run()
             i += 1
         mySpider.mysqlConn.close()

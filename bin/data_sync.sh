@@ -1,5 +1,7 @@
 #!bin/bash
 
+source /etc/profile
+
 pt=$1
 dt="${pt:0:4}-${pt:4:2}-${pt:6:2}"
 
